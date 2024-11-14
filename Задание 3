@@ -1,0 +1,100 @@
+import java.util.ArrayList;
+import java.util.List;
+
+// Класс Фотография
+class Photograph {
+    private String name;
+
+    // Конструктор
+    public Photograph(String name) {
+        this.name = name;
+    }
+
+    // Метод для задания названия фотографии
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    // Метод для получения названия фотографии
+    public String getName() {
+        return name;
+    }
+
+    @Override
+    public String toString() {
+        return "Photograph{name='" + name + "'}";
+    }
+}
+
+// Класс Страница
+class Page {
+    private List<Photograph> photographs;
+
+    // Конструктор
+    public Page() {
+        photographs = new ArrayList<>();
+    }
+
+    // Метод для добавления фотографии на страницу
+    public void addPhotograph(Photograph photograph) {
+        photographs.add(photograph);
+    }
+
+    // Метод для получения всех фотографий на странице
+    public List<Photograph> getPhotographs() {
+        return photographs;
+    }
+}
+
+// Класс Фотоальбом
+class PhotoAlbum {
+    private List<Page> pages;
+
+    // Конструктор
+    public PhotoAlbum() {
+        pages = new ArrayList<>();
+    }
+
+    // Метод для добавления страницы в альбом
+    public void addPage(Page page) {
+        pages.add(page);
+    }
+
+    // Метод для добавления фотографии на последнюю страницу альбома
+    public void addPhotograph(Photograph photograph) {
+        if (pages.isEmpty()) {
+            Page newPage = new Page();
+            newPage.addPhotograph(photograph);
+            addPage(newPage);
+        } else {
+            pages.get(pages.size() - 1).addPhotograph(photograph);
+        }
+    }
+
+    // Метод для вывода на консоль количества фотографий в альбоме
+    public void printPhotoCount() {
+        int count = 0;
+        for (Page page : pages) {
+            count += page.getPhotographs().size();
+        }
+        System.out.println("Количество фотографий в альбоме: " + count);
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        // Создание объекта класса PhotoAlbum
+        PhotoAlbum album = new PhotoAlbum();
+
+        // Создание фотографий
+        Photograph photo1 = new Photograph("Отпуск 2024");
+        Photograph photo2 = new Photograph("Свадьба");
+
+        // Добавление фотографий в альбом
+        album.addPhotograph(photo1);
+        album.addPhotograph(photo2);
+
+        // Вывод количества фотографий в альбоме
+        album.printPhotoCount();
+    }
+}
