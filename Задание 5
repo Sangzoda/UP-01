@@ -1,0 +1,25 @@
+public class Main {
+    public static String capitalizeWords(String input) {
+        String[] words = input.split("\\s+"); // Разбиваем текст на слова
+        StringBuilder result = new StringBuilder();
+
+        for (String word : words) {
+            // Проверяем, содержит ли слово только алфавитные символы
+            if (word.matches("[a-zA-Z]+")) {
+                // Преобразуем первую букву в заглавную, а остальные в строчные
+                word = word.substring(0, 1).toUpperCase() + word.substring(1).toLowerCase();
+            }
+            // Добавляем слово к результату
+            result.append(word).append(" ");
+        }
+
+        return result.toString().trim(); // Убираем лишний пробел в конце
+    }
+
+    public static void main(String[] args) {
+        String text = "hello world! this is an Example. 123test";
+        String transformedText = capitalizeWords(text);
+        System.out.println("Исходный текст: " + text);
+        System.out.println("Преобразованный текст: " + transformedText);
+    }
+}
