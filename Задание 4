@@ -1,0 +1,78 @@
+import java.util.List;
+import java.util.ArrayList;
+
+// Класс Фильм
+class Film {
+    private String title; // Название фильма
+    private FilmDetails details; // Детали фильма
+
+    // Конструктор класса Film
+    public Film(String title, int duration, String genre, List<String> directors) {
+        this.title = title;
+        this.details = new FilmDetails(duration, genre, directors);
+    }
+
+    // Внутренний класс FilmDetails
+    public class FilmDetails {
+        private int duration; // Продолжительность фильма в минутах
+        private String genre; // Жанр фильма
+        private List<String> directors; // Список режиссёров
+
+        // Конструктор класса FilmDetails
+        public FilmDetails(int duration, String genre, List<String> directors) {
+            this.duration = duration;
+            this.genre = genre;
+            this.directors = new ArrayList<>(directors);
+        }
+
+        // Методы доступа к данным
+        public int getDuration() {
+            return duration;
+        }
+
+        public String getGenre() {
+            return genre;
+        }
+
+        public List<String> getDirectors() {
+            return directors;
+        }
+
+        @Override
+        public String toString() {
+            return "Продолжительность: " + duration + " минут, Жанр: " + genre + ", Режиссёры: " + directors;
+        }
+    }
+
+    // Метод для получения информации о фильме
+    public String getFilmInfo() {
+        return "Название фильма: " + title + ", " + details.toString();
+    }
+
+    // Метод для изменения деталей фильма
+    public void updateDetails(int duration, String genre, List<String> directors) {
+        this.details = new FilmDetails(duration, genre, directors);
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        // Создаем список режиссеров
+        List<String> directors = new ArrayList<>();
+        directors.add("Кристофер Нолан");
+        directors.add("Квентин Тарантино");
+
+        // Создаем объект фильма с деталями
+        Film inception = new Film("Начало", 148, "Фантастика", directors);
+
+        // Выводим информацию о фильме
+        System.out.println(inception.getFilmInfo());
+
+        // Обновляем информацию о фильме
+        directors.add("Дэвид Финчер");
+        inception.updateDetails(148, "Фантастика, Триллер", directors);
+
+        // Выводим обновленную информацию о фильме
+        System.out.println(inception.getFilmInfo());
+    }
+}
