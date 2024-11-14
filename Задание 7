@@ -1,0 +1,60 @@
+import javax.swing.*;
+import java.awt.*;
+
+public class SnowmanDrawing extends JPanel {
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+
+        // Рисуем тело снеговика
+        g.setColor(Color.WHITE);
+        g.fillOval(120, 200, 150, 150); // Нижний шар
+        g.fillOval(140, 110, 110, 110); // Средний шар
+        g.fillOval(160, 50, 80, 80); // Голова
+
+        // Рисуем ведро на голове
+        g.setColor(Color.BLACK);
+        g.fillRect(180, 30, 50, 10); // Крышка
+        g.fillRect(170, 40, 60, 20); // Основная часть ведра
+
+        // Рисуем глаза
+        g.setColor(Color.BLACK);
+        g.fillOval(180, 70, 10, 10); // Левый глаз
+        g.fillOval(210, 70, 10, 10); // Правый глаз
+
+        // Рисуем нос (морковка)
+        g.setColor(Color.ORANGE);
+        Polygon carrot = new Polygon();
+        carrot.addPoint(195, 80);
+        carrot.addPoint(210, 85);
+        carrot.addPoint(195, 90);
+        g.fillPolygon(carrot);
+
+        // Рисуем метлу
+        g.setColor(new Color(139, 69, 19)); // Коричневый цвет
+        g.fillRect(300, 95, 10, 50); // Рукоятка метлы
+        g.setColor(Color.GRAY); // Цвет щетинки метлы
+        g.fillRect(285, 90, 40, 10); // Щетинка
+
+        // Рисуем руки
+        g.setColor(new Color(139, 69, 19)); // Коричневый цвет для рук
+        g.fillRect(90, 130, 60, 10); // Левой рука
+        g.fillRect(240, 130, 60, 10); // Правой рука
+
+        // Рисуем пуговицы
+        g.setColor(Color.BLACK);
+        g.fillOval(190, 130, 10, 10); // Первая пуговка
+        g.fillOval(190, 150, 10, 10); // Вторая пуговка
+        g.fillOval(190, 170, 10, 10); // Третья пуговка
+    }
+
+    public static void main(String[] args) {
+        JFrame frame = new JFrame("Snowman Drawing");
+        SnowmanDrawing snowman = new SnowmanDrawing();
+        frame.add(snowman);
+        frame.setSize(400, 400);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setVisible(true);
+    }
+}
