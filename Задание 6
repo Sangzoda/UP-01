@@ -1,0 +1,211 @@
+import java.util.ArrayList;
+import java.util.List;
+import java.util.regex.Pattern;
+
+// Класс Каталог (Directory)
+class Directory {
+    private String name;
+    private Directory parent;
+    private List<Directory> subdirectories;
+    private List<FileEntity> files;
+
+    // Конструктор для создания каталога
+    public Directory(String name, Directory parent) {
+        this.name = name;
+        this.parent = parent;
+        this.subdirectories = new ArrayList<>();
+        this.files = new ArrayList<>();
+    }
+
+    // Метод для получения названия каталога
+    public String getName() {
+        return name;
+    }
+
+    // Метод для получения родительского каталога
+    public Directory getParent() {
+        return parent;
+    }
+
+    // Метод для добавления подкаталога
+    public void addSubdirectory(Directory directory) {
+        subdirectories.add(directory);
+    }
+
+    // Метод для добавления файла в каталог
+    public void addFile(FileEntity file) {
+        files.add(file);
+    }
+
+    // Метод для получения подкаталогов
+    public List<Directory> getSubdirectories() {
+        return subdirectories;
+    }
+
+    // Метод для получения файлов
+    public List<FileEntity> getFiles() {
+        return files;
+    }
+
+    // Метод для получения полного пути каталога
+    public String getFullPath() {
+        if (parent == null) {
+            return name;
+        } else {
+            return parent.getFullPath() + "/" + name;
+        }
+    }
+}
+
+// Класс Файл (FileEntity)
+class FileEntity {
+    private String name;
+    private Directory parent;
+    private int size; // Размер файла в байтах
+
+    // Конструктор для создания файла
+    public FileEntity(String name, int size, Directory parent) {
+        this.name = name;
+        this.size = size;
+        this.parent = parent;
+    }
+
+    // Метод для получения названия файла
+    public String getName() {
+        return name;
+    }
+
+    // Метод для получения размера файла
+    public int getSize() {
+        return size;
+    }
+
+    // Метод для получения родительского каталога
+    public Directory getParent() {
+        return parent;
+    }
+
+    // Метод для получения полного пути файла
+    public String getFullPath() {
+        return parent.getFullPath() + "/" + name;
+    }
+}
+
+// Класс для управления файловой системой
+class FileSystem {
+    private Directory root;
+
+    // Конструктор, создающий корневой каталог
+    public FileSystem() {
+        root = new Directory("root", null);
+    }
+
+    // Метод для получения корневого каталога
+    public Directory getRoot() {
+        return root;
+    }
+
+    // Метод для подсчета файлов в каталоге (включая вложенные)
+    public int countFiles(Directory directory) {
+        int count = directory.getFiles().size();
+        for (Directory subdirectory : directory.getSubdirectories()) {
+            count += countFiles(subdirectory);
+        }
+        return count;
+    }
+
+    // Метод для подсчета места, занимаемого файлами в каталоге (включая вложенные)
+    public int calculateSize(Directory directory) {
+        int size = 0;
+        for (FileEntity file : directory.getFiles()) {
+            size += file.getSize();
+        }
+        for (Directory subdirectory : directory.getSubdirectories()) {
+            size += calculateSize(subdirectory);
+        }
+        return size;
+    }
+
+    // Метод для поиска файлов по маске с выдачей полного пути
+    public List<String> findFilesByMask(Directory directory, String mask) {
+        List<String> foundFiles = new ArrayList<>();
+        Pattern pattern = Pattern.compile(mask.replace("*", ".*")); // Преобразуем маску в регулярное выражение
+
+        // Проверяем файлы в текущем каталоге
+        for (FileEntity file : directory.getFiles()) {
+            if (pattern.matcher(file.getName()).matches()) {
+                foundFiles.add(file.getFullPath());
+            }
+        }
+
+        // Рекурсивно проверяем подкаталоги
+        for (Directory subdirectory : directory.getSubdirectories()) {
+            foundFiles.addAll(findFilesByMask(subdirectory, mask));
+        }
+
+        return foundFiles;
+    }
+
+    // Метод для перемещения файлов и подкаталогов в другой каталог
+    public void moveContents(Directory source, Directory destination) {
+        // Перемещаем все файлы
+        for (FileEntity file : source.getFiles()) {
+            destination.addFile(file);
+        }
+        source.getFiles().clear(); // Очищаем список файлов в исходном каталоге
+
+        // Перемещаем все подкаталоги
+        for (Directory subdirectory : source.getSubdirectories()) {
+            destination.addSubdirectory(subdirectory);
+        }
+        source.getSubdirectories().clear(); // Очищаем список подкаталогов
+    }
+
+    // Метод для удаления всех файлов и подкаталогов в каталоге
+    public void deleteContents(Directory directory) {
+        directory.getFiles().clear();
+        directory.getSubdirectories().clear();
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        FileSystem fileSystem = new FileSystem();
+        Directory root = fileSystem.getRoot();
+
+        // Создаем подкаталоги и файлы
+        Directory photos = new Directory("Photos", root);
+        root.addSubdirectory(photos);
+
+        Directory videos = new Directory("Videos", root);
+        root.addSubdirectory(videos);
+
+        FileEntity photo1 = new FileEntity("beach.jpg", 500, photos);
+        photos.addFile(photo1);
+
+        FileEntity video1 = new FileEntity("vacation.mp4", 1500, videos);
+        videos.addFile(video1);
+
+        // Пример использования методов
+
+        // Определяем полный путь файла
+        System.out.println("Полный путь к файлу: " + photo1.getFullPath());
+
+        // Подсчитываем количество файлов в каталоге
+        System.out.println("Количество файлов в каталоге Photos: " + fileSystem.countFiles(photos));
+
+        // Подсчитываем место, занимаемое на диске
+        System.out.println("Место, занимаемое в каталоге Videos: " + fileSystem.calculateSize(videos) + " байт");
+
+        // Поиск файлов по маске
+        System.out.println("Файлы по маске '*.jpg': " + fileSystem.findFilesByMask(root, "*.jpg"));
+
+        // Перемещение содержимого каталога Photos в каталог Videos
+        fileSystem.moveContents(photos, videos);
+        System.out.println("Количество файлов в каталоге Videos после перемещения: " + fileSystem.countFiles(videos));
+
+        // Удаление всех файлов и подкаталогов в каталоге Videos
+        fileSystem.deleteContents(videos);
+        System.out.println("Количество файлов в каталоге Videos после удаления: " + fileSystem.countFiles(videos));
+    }
+}
