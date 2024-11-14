@@ -1,0 +1,113 @@
+import javax.swing.*;
+import java.awt.*;
+import java.util.Random;
+
+class TFish {
+    private Point coord; // Координаты рыбки
+    private double speed; // Скорость
+    private int size; // Размер
+    private Color color; // Цвет
+    private double direction; // Направление движения в градусах
+    private Random random = new Random();
+
+    public TFish() {
+        this.coord = new Point(0, 0);
+        this.speed = 1.0;
+        this.size = 10;
+        this.color = Color.ORANGE;
+        this.direction = 0; // Направление в градусах
+    }
+
+    public void Init(Point coord, double speed, int size, Color color, double direction) {
+        this.coord = coord;
+        this.speed = speed;
+        this.size = size;
+        this.color = color;
+        this.direction = direction;
+        Draw();
+    }
+
+    private void Draw() {
+    }
+
+    public void Draw(Graphics g) {
+        g.setColor(color);
+        int x = coord.x;
+        int y = coord.y;
+        int[] xPoints = {x, x + size, x};
+        int[] yPoints = {y, y + size / 2, y - size / 2};
+        g.fillPolygon(xPoints, yPoints, 3);
+    }
+
+    public Color Look(Color[][] aquarium, int width, int height) {
+        int steps = 5; // Количество проверяемых точек
+        double radian = Math.toRadians(direction);
+
+        for (int i = 1; i <= steps; i++) {
+            int checkX = (int) (coord.x + i * speed * Math.cos(radian));
+            int checkY = (int) (coord.y + i * speed * Math.sin(radian));
+
+            // Проверка границ аквариума
+            if (checkX < 0 || checkX >= width || checkY < 0 || checkY >= height) {
+                continue;
+            }
+
+            if (aquarium[checkY][checkX] != Color.BLUE) { // Допустим, цвет воды - синий
+                return aquarium[checkY][checkX]; // Возвращаем цвет, если обнаружен объект
+            }
+        }
+        return null; // Все точки как цвет воды
+    }
+
+    public void Run() {
+        double angleChange = random.nextDouble() * 20 - 10; // Изменение угла
+        direction += angleChange;
+
+        // Перемещение
+        double radian = Math.toRadians(direction);
+        coord.x += (int) (speed * Math.cos(radian));
+        coord.y += (int) (speed * Math.sin(radian));
+
+        // Ограничиваем координаты аквариума
+        coord.x = Math.max(0, Math.min(coord.x, 400)); // Допустим, ширина аквариума 400
+        coord.y = Math.max(0, Math.min(coord.y, 400)); // Допустим, высота аквариума 400
+    }
+
+    public Point getCoord() {
+        return coord;
+    }
+}
+
+// Пример использования в JFrame
+ class Aquarium extends JPanel {
+    private TFish fish;
+
+    public Aquarium() {
+        fish = new TFish();
+        fish.Init(new Point(200, 200), 2.0, 20, Color.ORANGE, 45.0);
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        fish.Draw(g);
+    }
+
+    public void update() {
+        fish.Run();
+        repaint();
+    }
+
+    public static void main(String[] args) {
+        JFrame frame = new JFrame("Aquarium");
+        Aquarium aquarium = new Aquarium();
+        frame.add(aquarium);
+        frame.setSize(400, 400);
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setVisible(true);
+
+        // Обновляем аквариум
+        Timer timer = new Timer(100, e -> aquarium.update());
+        timer.start();
+    }
+}
