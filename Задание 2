@@ -1,0 +1,170 @@
+import java.util.Arrays;
+
+class Phone {
+    private int id;
+    private String surname;
+    private String name;
+    private String patronymic;
+    private String address;
+    private String creditCardNumber;
+    private double debit;
+    private double credit;
+    private int cityCallTime; // время городских разговоров в минутах
+    private int longDistanceCallTime; // время междугородних разговоров в минутах
+
+    // Конструктор с параметрами
+    public Phone(int id, String surname, String name, String patronymic, String address, String creditCardNumber, 
+                 double debit, double credit, int cityCallTime, int longDistanceCallTime) {
+        this.id = id;
+        this.surname = surname;
+        this.name = name;
+        this.patronymic = patronymic;
+        this.address = address;
+        this.creditCardNumber = creditCardNumber;
+        this.debit = debit;
+        this.credit = credit;
+        this.cityCallTime = cityCallTime;
+        this.longDistanceCallTime = longDistanceCallTime;
+    }
+
+    // Пустой конструктор
+    public Phone() {}
+
+    // Методы доступа (getters and setters)
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getSurname() {
+        return surname;
+    }
+
+    public void setSurname(String surname) {
+        this.surname = surname;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getPatronymic() {
+        return patronymic;
+    }
+
+    public void setPatronymic(String patronymic) {
+        this.patronymic = patronymic;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getCreditCardNumber() {
+        return creditCardNumber;
+    }
+
+    public void setCreditCardNumber(String creditCardNumber) {
+        this.creditCardNumber = creditCardNumber;
+    }
+
+    public double getDebit() {
+        return debit;
+    }
+
+    public void setDebit(double debit) {
+        this.debit = debit;
+    }
+
+    public double getCredit() {
+        return credit;
+    }
+
+    public void setCredit(double credit) {
+        this.credit = credit;
+    }
+
+    public int getCityCallTime() {
+        return cityCallTime;
+    }
+
+    public void setCityCallTime(int cityCallTime) {
+        this.cityCallTime = cityCallTime;
+    }
+
+    public int getLongDistanceCallTime() {
+        return longDistanceCallTime;
+    }
+
+    public void setLongDistanceCallTime(int longDistanceCallTime) {
+        this.longDistanceCallTime = longDistanceCallTime;
+    }
+
+    // Метод toString для вывода информации об абоненте
+    @Override
+    public String toString() {
+        return "Phone [id=" + id + ", surname=" + surname + ", name=" + name + ", patronymic=" + patronymic
+                + ", address=" + address + ", creditCardNumber=" + creditCardNumber + ", debit=" + debit + ", credit="
+                + credit + ", cityCallTime=" + cityCallTime + ", longDistanceCallTime=" + longDistanceCallTime + "]";
+    }
+
+    // Вывести абонентов, у которых время внутригородских разговоров превышает заданное
+    public static void printCityCallExceed(Phone[] phones, int threshold) {
+        System.out.println("Абоненты с городскими разговорами более " + threshold + " минут:");
+        for (Phone phone : phones) {
+            if (phone.getCityCallTime() > threshold) {
+                System.out.println(phone);
+            }
+        }
+    }
+
+    // Вывести абонентов, которые пользовались междугородней связью
+    public static void printLongDistanceUsers(Phone[] phones) {
+        System.out.println("Абоненты, пользовавшиеся междугородней связью:");
+        for (Phone phone : phones) {
+            if (phone.getLongDistanceCallTime() > 0) {
+                System.out.println(phone);
+            }
+        }
+    }
+
+    // Вывести абонентов в алфавитном порядке по фамилии
+    public static void printAlphabeticalOrder(Phone[] phones) {
+        Arrays.sort(phones, (p1, p2) -> p1.getSurname().compareToIgnoreCase(p2.getSurname()));
+        System.out.println("Абоненты в алфавитном порядке:");
+        for (Phone phone : phones) {
+            System.out.println(phone);
+        }
+    }
+}
+
+public class Main {
+    public static void main(String[] args) {
+        // Создание массива объектов класса Phone
+        Phone[] phones = {
+            new Phone(1, "Иванов", "Иван", "Иванович", "ул. Ленина, 10", "1234-5678-9101", 1000.50, 2000.75, 120, 30),
+            new Phone(2, "Петров", "Петр", "Петрович", "ул. Садовая, 5", "2345-6789-0123", 1500.00, 2500.00, 90, 0),
+            new Phone(3, "Сидоров", "Сидор", "Сидорович", "ул. Центральная, 1", "3456-7890-1234", 2000.25, 1000.50, 200, 50)
+        };
+
+        // Вывод абонентов с городскими разговорами более 100 минут
+        Phone.printCityCallExceed(phones, 100);
+
+        // Вывод абонентов, которые пользовались междугородней связью
+        Phone.printLongDistanceUsers(phones);
+
+        // Вывод абонентов в алфавитном порядке
+        Phone.printAlphabeticalOrder(phones);
+    }
+}
