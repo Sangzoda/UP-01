@@ -1,0 +1,117 @@
+@Controller
+public class AuthController {
+    private final UserService userService;
+
+    public AuthController(UserService userService) {
+        this.userService = userService;
+    }
+
+    @GetMapping("/login")
+    public String login() {
+        return "login";
+    }
+
+    @PostMapping("/login")
+    public String login(String username, String password, HttpSession session, Model model) {
+        if (userService.validateUser(username, password)) {
+            session.setAttribute("username", username);
+            return "redirect:/tours";
+        } else {
+            model.addAttribute("error", "Неправильное имя пользователя или пароль");
+            return "login";
+        }
+    }
+
+    @GetMapping("/logout")
+    public String logout(HttpSession session) {
+        session.invalidate();
+        return "redirect:/login";
+    }
+}
+@Controller
+public class TourController {
+    private final TourService tourService;
+
+    public TourController(TourService tourService) {
+        this.tourService = tourService;
+    }
+
+    @GetMapping("/tours")
+    public String viewTours(Model model) {
+        model.addAttribute("tours", tourService.getAllTours());
+        return "tours";
+    }
+
+    @PostMapping("/tours/add")
+    public String addTour(Tour tour) {
+        tourService.saveTour(tour);
+        return "redirect:/tours";
+    }
+}
+
+@Entity
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+public class Tour {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
+    private String destination;
+    private double price;
+    private LocalDate startDate;
+    private LocalDate endDate;
+}
+@Entity
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
+public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
+    private String username;
+    private String password;
+    private String role; 
+}
+@Repository
+public interface TourRepository extends CrudRepository<Tour, Long> {
+    List<Tour> findAll();
+}
+@Repository
+public interface UserRepository extends CrudRepository<User, Long> {
+    User findByUsername(String username);
+}
+@Service
+public class TourService {
+    private final TourRepository tourRepository;
+
+    public TourService(TourRepository tourRepository) {
+        this.tourRepository = tourRepository;
+    }
+
+    public List<Tour> getAllTours() {
+        return tourRepository.findAll();
+    }
+
+    public Tour saveTour(Tour tour) {
+        return tourRepository.save(tour);
+    }
+}
+@Service
+public class UserService {
+    private final UserRepository userRepository;
+
+    public UserService(UserRepository userRepository) {
+        this.userRepository = userRepository;
+    }
+
+    public User findByUsername(String username) {
+        return userRepository.findByUsername(username);
+    }
+
+    public boolean validateUser(String username, String password) {
+        User user = findByUsername(username);
+        return user != null && user.getPassword().equals(password);
+    }
+}
